@@ -32,7 +32,9 @@ services:
     ports:
       - "8000:80"
     volumes:
-      - static:/staticfiles/
-      - media:/app/media/
+      - ../frontend/build:/usr/share/nginx/html/
+      - ../docs/:/usr/share/nginx/html/api/docs/
+      - static_volume:/staticfiles/
+      - media_volume:/app/media/
     depends_on:
       - backend
