@@ -26,7 +26,7 @@ def get_full_url(short_url):
     """Функция получения полной ссылки на рецепт."""
 
     try:
-        url = ShortLink.objects.get(short_url__exact=short_url)
+        url = ShortLink.objects.get(short_url=short_url)
 
     except ShortLink.DoesNotExist:
         raise KeyError('Такого роута не существует.')

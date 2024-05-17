@@ -1,5 +1,4 @@
 import random
-from urllib.parse import urlparse
 
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator, MinValueValidator
@@ -15,7 +14,6 @@ from foodgram.settings import (
     MAX_LENGTH_OF_RECIPE,
     MIN_TIME_OF_COOKING,
     MIN_VALUE_OF_INGREDIENTS,
-    SHORT_LINK_MAX_LENGTH,
     SYMBOLS_FOR_SHORT_LINK,
     SHORT_LINK_LENGTH,
 )
@@ -221,7 +219,6 @@ class ShortLink(models.Model):
 
     full_url = models.URLField()
     short_url = models.CharField(
-        max_length=SHORT_LINK_MAX_LENGTH,
         db_index=True,
         blank=True,
     )
@@ -230,9 +227,7 @@ class ShortLink(models.Model):
 
         if not self.short_url:
             while True:
-                parse_url = urlparse(self.full_url)
-                base_url = parse_url.scheme + '://' + parse_url.netloc + '/s/'
-                self.short_url = base_url + ''.join(
+                self.short_url = ''.join(
                     random.choices(
                         SYMBOLS_FOR_SHORT_LINK,
                         k=SHORT_LINK_LENGTH,

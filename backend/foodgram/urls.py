@@ -7,5 +7,5 @@ from api.services import redirection
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
-    path('s/<str:short_url>', redirection),
+    path('s/<str:short_url>/', redirection),
 ]

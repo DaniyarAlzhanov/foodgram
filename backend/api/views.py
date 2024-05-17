@@ -1,4 +1,5 @@
 from io import BytesIO
+from urllib.parse import urlparse
 
 from django.db.models import Sum
 from django.http import FileResponse
@@ -275,7 +276,7 @@ class RecipeViewSet(ModelViewSet):
         buffer = BytesIO()
         pdf_file = canvas.Canvas(buffer)
         pdfmetrics.registerFont(TTFont('FreeSans', '/app/api/fonts/FreeSans.ttf'))
-        pdf_file.setFont('FreeSans', 32)
+        pdf_file.setFont('FreeSans', 15)
         ingredients = IngredientInRecipe.objects.filter(
             recipe__shopping_list__user=request.user
         ).values(
@@ -294,6 +295,7 @@ class RecipeViewSet(ModelViewSet):
                 f'{ingredient["amount_of_ingredients"]} '
                 f'{ingredient["ingredient__measurement_unit"]}',
             )
+            y -= 20
 
         pdf_file.showPage()
         pdf_file.save()
@@ -313,12 +315,18 @@ class RecipeViewSet(ModelViewSet):
         permission_classes=(AllowAny,),
     )
     def short_link(self, request, pk):
-        serializer = ShortLinkSerializer(data={'full_url': request.build_absolute_uri()})
+        full_url = request.build_absolute_uri().rstrip('get-link/')
+        serializer = ShortLinkSerializer(
+            data={'full_url': full_url}
+        )
         if serializer.is_valid(raise_exception=True):
             url = serializer.create(
                 validated_data=serializer.validated_data
             )
-            return Response({'short-link': url.short_url}, status=status.HTTP_200_OK)
+            parse_url = urlparse(full_url)
+            base_url = parse_url.scheme + '://' + parse_url.netloc + '/s/'
+            short_url = base_url + url.short_url
+            return Response({'short-link': short_url}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def perform_create(self, serializer):
