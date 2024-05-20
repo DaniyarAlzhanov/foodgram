@@ -1,3 +1,4 @@
+#isort: skip_file
 from io import BytesIO
 from urllib.parse import urlparse
 
@@ -6,48 +7,29 @@ from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
 from rest_framework import status
-from rest_framework.exceptions import NotAuthenticated
 from rest_framework.decorators import action
+from rest_framework.exceptions import NotAuthenticated
 from rest_framework.filters import SearchFilter
+from rest_framework.permissions import (AllowAny, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
-from rest_framework.viewsets import (
-    ModelViewSet,
-    ReadOnlyModelViewSet,
-)
-from rest_framework.permissions import (
-    AllowAny,
-    IsAuthenticated,
-    IsAuthenticatedOrReadOnly,
-)
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from .filters import RecipeFilter, IngredientFilter
+from .filters import IngredientFilter, RecipeFilter
 from .pagination import LimitPaginator
-from .permissions import (
-    IsAuthorOrAdmin,
-)
-from .serializers import (
-    CustomUserSerializer,
-    FollowAndShoppingListSerializer,
-    FollowSerializer,
-    TagSerializer,
-    IngredientSerializer,
-    RecipeGetSerializer,
-    RecipeCUDSerializer,
-    ShortLinkSerializer,
-)
-from recipes.models import (
-    Tag,
-    Ingredient,
-    Recipe,
-    IngredientInRecipe,
-    Favorite,
-    ShoppingList,
-)
-from users.models import Follow, User
+from .permissions import IsAuthorOrAdmin
+from recipes.models import (Favorite, Ingredient,
+                            IngredientInRecipe, Recipe, ShoppingList, Tag)
+from .serializers import (CustomUserSerializer,
+                          FollowAndShoppingListSerializer, FollowSerializer,
+                          IngredientSerializer, RecipeCUDSerializer,
+                          RecipeGetSerializer, ShortLinkSerializer,
+                          TagSerializer)
+from users.models import Follow, User # isort: skip
 
 
 class CustomUserViewSet(UserViewSet):
@@ -65,7 +47,9 @@ class CustomUserViewSet(UserViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def me(self, request):
-        serializer = CustomUserSerializer(request.user, context={'request': request})
+        serializer = CustomUserSerializer(
+            request.user, context={'request': request}
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(
@@ -87,8 +71,12 @@ class CustomUserViewSet(UserViewSet):
             )
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    serializer.data, status=status.HTTP_200_OK
+                )
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
         if request.method == 'DELETE':
             user = User.objects.get(username=request.user.username)
             user.avatar = None
@@ -125,12 +113,17 @@ class CustomUserViewSet(UserViewSet):
             context={'request': request},
             is_subscribed=True,
         )
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED
+        )
 
     @subscribe.mapping.delete
     def unsubscribe(self, request, **kwargs):
         user = request.user
-        author = get_object_or_404(User, pk=self.kwargs.get('id'))
+        author = get_object_or_404(
+            User,
+            pk=self.kwargs.get('id'),
+        )
         existing_follow = Follow.objects.filter(
             author=author,
             user=user,
@@ -275,7 +268,9 @@ class RecipeViewSet(ModelViewSet):
     def download_shopping_cart(self, request):
         buffer = BytesIO()
         pdf_file = canvas.Canvas(buffer)
-        pdfmetrics.registerFont(TTFont('FreeSans', '/app/api/fonts/FreeSans.ttf'))
+        pdfmetrics.registerFont(TTFont(
+            'FreeSans', '/app/api/fonts/FreeSans.ttf')
+        )
         pdf_file.setFont('FreeSans', 15)
         ingredients = IngredientInRecipe.objects.filter(
             recipe__shopping_list__user=request.user
@@ -326,7 +321,9 @@ class RecipeViewSet(ModelViewSet):
             parse_url = urlparse(full_url)
             base_url = parse_url.scheme + '://' + parse_url.netloc + '/s/'
             short_url = base_url + url.short_url
-            return Response({'short-link': short_url}, status=status.HTTP_200_OK)
+            return Response(
+                {'short-link': short_url}, status=status.HTTP_200_OK
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def perform_create(self, serializer):

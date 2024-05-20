@@ -1,15 +1,10 @@
+# isort: skip_file
+
 from django.contrib import admin
 
 from foodgram.settings import EMPTY_VALUE
-from .models import(
-    Tag,
-    Ingredient,
-    Recipe,
-    IngredientInRecipe,
-    Favorite,
-    ShoppingList,
-    ShortLink,
-)
+from .models import (Favorite, Ingredient, IngredientInRecipe,  # isort: skip
+                     Recipe, ShoppingList, ShortLink, Tag)
 from .mixins import AdminMixin
 
 

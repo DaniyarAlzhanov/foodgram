@@ -1,12 +1,10 @@
 import base64
-import logging
 
+from django.core.files.base import ContentFile
 from django.http import HttpResponse
 from django.shortcuts import redirect
-from django.core.files.base import ContentFile
-from rest_framework import serializers
-
 from recipes.models import ShortLink
+from rest_framework import serializers
 
 
 class Base64ImageField(serializers.ImageField):

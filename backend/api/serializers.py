@@ -1,18 +1,12 @@
+#isort: skip_file
 from django.contrib.auth.hashers import make_password
 from djoser.serializers import UserSerializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
+                            ShoppingList, ShortLink, Tag)
 from .services import Base64ImageField
-from recipes.models import (
-    Tag,
-    Ingredient,
-    Recipe,
-    IngredientInRecipe,
-    Favorite,
-    ShoppingList,
-    ShortLink,
-)
 from users.models import Follow, User
 
 
@@ -130,7 +124,9 @@ class FollowSerializer(serializers.ModelSerializer):
         self.is_subscribed = is_subscribed
 
     def get_avatar(self, obj):
-        return self.context['request'].build_absolute_uri(obj.author.avatar)
+        return self.context['request'].build_absolute_uri(
+            obj.author.avatar
+        )
 
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
@@ -145,7 +141,9 @@ class FollowSerializer(serializers.ModelSerializer):
         user = obj.user
         if user.is_authenticated:
             queryset = user.recipes.all()
-            limit = self.context.get('request').query_params.get('recipes_limit')
+            limit = self.context.get(
+                'request'
+            ).query_params.get('recipes_limit')
             if limit:
                 queryset = queryset[:int(limit)]
             return FollowAndShoppingListSerializer(
@@ -283,7 +281,9 @@ class RecipeCUDSerializer(serializers.ModelSerializer):
             ingredients_in_recipe.append(
                 IngredientInRecipe(
                     recipe=recipe,
-                    ingredient=Ingredient.objects.get(id=ingredient.get('id')),
+                    ingredient=Ingredient.objects.get(
+                        id=ingredient.get('id')
+                    ),
                     amount=ingredient.get('amount'),
                 )
             )
@@ -327,7 +327,9 @@ class RecipeCUDSerializer(serializers.ModelSerializer):
                 'Нельзя добавлять одинаковые тэги.'
             )
 
-        available_tags = Tag.objects.filter(pk__in=[tag.id for tag in data])
+        available_tags = Tag.objects.filter(
+            pk__in=[tag.id for tag in data]
+        )
         if len(data) != len(available_tags):
             raise ValidationError(
                 'Нужно добавить хотя бы 1 тэг.'

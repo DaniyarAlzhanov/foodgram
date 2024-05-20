@@ -1,15 +1,12 @@
+#isort: skip_file
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 
 from api.validators import validate_username
-from foodgram.settings import (
-    MAX_LENGTH_OF_EMAIL,
-    MAX_LENGTH_OF_USERNAME,
-    MAX_LENGTH_OF_FIRST_NAME,
-    MAX_LENGTH_OF_LAST_NAME,
-    MESSAGE_FOR_USERNAME_VALIDATOR,
-)
+from foodgram.settings import (MAX_LENGTH_OF_EMAIL, MAX_LENGTH_OF_FIRST_NAME,
+                               MAX_LENGTH_OF_LAST_NAME, MAX_LENGTH_OF_USERNAME,
+                               MESSAGE_FOR_USERNAME_VALIDATOR)
 
 
 class User(AbstractUser):

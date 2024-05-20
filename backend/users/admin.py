@@ -1,6 +1,8 @@
-from django.contrib import admin
+#isort: skip_file
 
+from django.contrib import admin
 from foodgram.settings import EMPTY_VALUE
+
 from .models import Follow, User
 
 
