@@ -219,6 +219,7 @@ class ShortLink(models.Model):
 
     full_url = models.URLField()
     short_url = models.CharField(
+        max_length=SHORT_LINK_LENGTH,
         db_index=True,
         blank=True,
     )

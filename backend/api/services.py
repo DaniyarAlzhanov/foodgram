@@ -1,4 +1,5 @@
 import base64
+import logging
 
 from django.http import HttpResponse
 from django.shortcuts import redirect
@@ -39,6 +40,7 @@ def redirection(request, short_url):
 
     try:
         full_link = get_full_url(short_url)
+        full_link = full_link.replace('/api', '', 1)
         return redirect(full_link)
 
     except Exception as error:
