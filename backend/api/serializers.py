@@ -1,4 +1,4 @@
-#isort: skip_file
+# isort: skip_file
 from django.contrib.auth.hashers import make_password
 from djoser.serializers import UserSerializer
 from rest_framework import serializers

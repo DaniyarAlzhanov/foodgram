@@ -1,4 +1,4 @@
-#isort: skip_file
+# isort: skip_file
 
 from django.contrib import admin
 from foodgram.settings import EMPTY_VALUE

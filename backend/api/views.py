@@ -1,4 +1,5 @@
-#isort: skip_file
+# isort: skip_file
+
 from io import BytesIO
 from urllib.parse import urlparse
 
@@ -29,7 +30,7 @@ from .serializers import (CustomUserSerializer,
                           IngredientSerializer, RecipeCUDSerializer,
                           RecipeGetSerializer, ShortLinkSerializer,
                           TagSerializer)
-from users.models import Follow, User # isort: skip
+from users.models import Follow, User
 
 
 class CustomUserViewSet(UserViewSet):
@@ -56,7 +57,7 @@ class CustomUserViewSet(UserViewSet):
         detail=False,
         url_path='me/avatar',
         url_name='me-avatar',
-        methods = ('put', 'delete'),
+        methods=('put', 'delete'),
         permission_classes=(IsAuthenticated,),
     )
     def avatar(self, request):
@@ -331,7 +332,6 @@ class RecipeViewSet(ModelViewSet):
             return serializer.save(author=self.request.user)
         else:
             raise NotAuthenticated()
-
 
     def perform_update(self, serializer):
         if self.request.user.is_authenticated:

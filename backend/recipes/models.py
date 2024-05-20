@@ -1,8 +1,11 @@
+# isort: skip_file
+
 import random
 
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
+
 from foodgram.settings import (MAX_LENGTH_OF_INGREDIENT, MAX_LENGTH_OF_RECIPE,
                                MAX_LENGTH_OF_TAG, MAX_LENGTH_OF_TAG_SLUG,
                                MAX_LENGTH_OF_UNIT,
@@ -10,6 +13,7 @@ from foodgram.settings import (MAX_LENGTH_OF_INGREDIENT, MAX_LENGTH_OF_RECIPE,
                                MIN_TIME_OF_COOKING, MIN_VALUE_OF_INGREDIENTS,
                                REGEX_OF_SLUG, SHORT_LINK_LENGTH,
                                SYMBOLS_FOR_SHORT_LINK)
+
 
 User = get_user_model()
 
