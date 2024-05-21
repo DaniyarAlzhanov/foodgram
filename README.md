@@ -74,7 +74,7 @@ Cайт, на котором пользователи могут публико�
   sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
   sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/static/. /staticfiles/
   ```
-# Документация находится по роуту: /api/docs/
+### Документация находится по роуту: /api/docs/
   
   
 
