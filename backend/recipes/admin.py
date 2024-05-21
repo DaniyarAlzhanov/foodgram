@@ -37,6 +37,9 @@ class IngredientAdmin(admin.ModelAdmin):
         'name',
         'measurement_unit',
     )
+    search_fields = (
+        'name',
+    )
     empty_value_display = EMPTY_VALUE
 
 
@@ -62,6 +65,10 @@ class RecipeAdmin(admin.ModelAdmin):
         'name',
         'author',
         'tags',
+    )
+    search_fields = (
+        'name',
+        'author',
     )
     empty_value_display = EMPTY_VALUE
     inlines = (IngredientInLine,)
