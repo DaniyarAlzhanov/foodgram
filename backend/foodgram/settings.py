@@ -13,7 +13,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
 
 DEBUG = os.getenv('DEBUG', 'false').lower() == 'true'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split()
+ALLOWED_HOSTS = ['*']
+# os.getenv('ALLOWED_HOSTS', 'localhost').split()
 
 
 INSTALLED_APPS = [
@@ -64,16 +65,25 @@ TEMPLATES = [
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 
-DATABASES = {
+if os.environ.get('ENV') == 'LOCAL':
+    DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'django'),
-        'USER': os.getenv('POSTGRES_USER', 'django'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', '0000'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', 5432)
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('POSTGRES_DB', 'django'),
+            'USER': os.getenv('POSTGRES_USER', 'django'),
+            'PASSWORD': os.getenv('POSTGRES_PASSWORD', '0000'),
+            'HOST': os.getenv('DB_HOST', 'localhost'),
+            'PORT': os.getenv('DB_PORT', 5432)
+        }
+    }
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -114,7 +124,7 @@ AUTH_USER_MODEL = 'users.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+        'rest_framework.permissions.IsAuthenticated',
     ],
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -129,9 +139,9 @@ DJOSER = {
     'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
     'SERIALIZERS': {
-        'user': 'api.serializers.CustomUserSerializer',
-        'user_list': 'api.serializers.CustomUserSerializer',
-        'user_create': 'api.serializers.CustomUserSerializer',
+        'user': 'api.serializers.BaseUserSerializer',
+        'current_user': 'api.serializers.BaseUserSerializer',
+        'user_list': 'api.serializers.BaseUserSerializer',
     },
     'PERMISSIONS': {
         'user': ('djoser.permissions.CurrentUserOrAdminOrReadOnly',),
@@ -142,30 +152,3 @@ DJOSER = {
 }
 
 CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split()
-
-MAX_LENGTH_OF_USERNAME = 150
-MAX_LENGTH_OF_EMAIL = 254
-MAX_LENGTH_OF_FIRST_NAME = 150
-MAX_LENGTH_OF_LAST_NAME = 150
-MESSAGE_FOR_USERNAME_VALIDATOR = (
-    'Никнейм должен быть '
-    'буквенно-цифровым'
-)
-MAX_LENGTH_OF_TAG = 32
-MAX_LENGTH_OF_TAG_SLUG = 32
-REGEX_OF_SLUG = '^[-a-zA-Z0-9_]+$'
-MESSAGE_FOR_TAG_SLUG_VALIDATOR = (
-    'Слаг должен быть '
-    'буквенно-цифровым'
-)
-MAX_LENGTH_OF_INGREDIENT = 128
-MAX_LENGTH_OF_UNIT = 64
-MAX_LENGTH_OF_RECIPE = 256
-MIN_TIME_OF_COOKING = 1
-MIN_VALUE_OF_INGREDIENTS = 1
-MIN_LENGTH_OF_FAVOURITE = 256
-EMPTY_VALUE = 'blank'
-SYMBOLS_FOR_SHORT_LINK = 'ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz234567890'
-SHORT_LINK_LENGTH = 6
-SHORTCODE_MIN = 4
-SHORTCODE_MAX = 20

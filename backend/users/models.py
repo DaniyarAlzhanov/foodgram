@@ -1,13 +1,10 @@
 # isort: skip_file
 
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 
-from api.validators import validate_username
-from foodgram.settings import (MAX_LENGTH_OF_EMAIL, MAX_LENGTH_OF_FIRST_NAME,
-                               MAX_LENGTH_OF_LAST_NAME, MAX_LENGTH_OF_USERNAME,
-                               MESSAGE_FOR_USERNAME_VALIDATOR)
+from foodgram.constants import (MAX_LENGTH_OF_EMAIL, MAX_LENGTH_OF_FIRST_NAME,
+                               MAX_LENGTH_OF_LAST_NAME)
 
 
 class User(AbstractUser):
@@ -16,17 +13,6 @@ class User(AbstractUser):
     email = models.EmailField(
         verbose_name='Электронная почта',
         max_length=MAX_LENGTH_OF_EMAIL,
-        unique=True,
-    )
-    username = models.CharField(
-        verbose_name='Никнейм пользователя',
-        max_length=MAX_LENGTH_OF_USERNAME,
-        validators=[
-            UnicodeUsernameValidator(
-                message=MESSAGE_FOR_USERNAME_VALIDATOR
-            ),
-            validate_username,
-        ],
         unique=True,
     )
     first_name = models.CharField(
@@ -44,6 +30,9 @@ class User(AbstractUser):
         blank=True,
         null=True,
     )
+    
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'username']
 
     class Meta:
         verbose_name = 'Пользователь'

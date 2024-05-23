@@ -2,7 +2,7 @@
 
 from django.contrib import admin
 
-from foodgram.settings import EMPTY_VALUE
+from foodgram.constants import EMPTY_VALUE, MIN_VALUE_OF_INGREDIENTS
 from .models import (Favorite, Ingredient, IngredientInRecipe,  # isort: skip
                      Recipe, ShoppingList, ShortLink, Tag)
 from .mixins import AdminMixin
@@ -46,6 +46,7 @@ class IngredientAdmin(admin.ModelAdmin):
 class IngredientInLine(admin.TabularInline):
     model = IngredientInRecipe
     extra = 5
+    min_num = MIN_VALUE_OF_INGREDIENTS
 
 
 @admin.register(Recipe)

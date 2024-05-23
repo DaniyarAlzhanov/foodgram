@@ -3,15 +3,15 @@
 import random
 
 from django.contrib.auth import get_user_model
-from django.core.validators import MinValueValidator, RegexValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
-from foodgram.settings import (MAX_LENGTH_OF_INGREDIENT, MAX_LENGTH_OF_RECIPE,
+from foodgram.constants import (MAX_LENGTH_OF_INGREDIENT, MAX_LENGTH_OF_RECIPE,
                                MAX_LENGTH_OF_TAG, MAX_LENGTH_OF_TAG_SLUG,
-                               MAX_LENGTH_OF_UNIT,
-                               MESSAGE_FOR_TAG_SLUG_VALIDATOR,
+                               MAX_LENGTH_OF_UNIT, MAX_TIME_OF_COOKING,
+                               MAX_VALUE_OF_INGREDIENTS,
                                MIN_TIME_OF_COOKING, MIN_VALUE_OF_INGREDIENTS,
-                               REGEX_OF_SLUG, SHORT_LINK_LENGTH,
+                               SHORT_LINK_LENGTH,
                                SYMBOLS_FOR_SHORT_LINK)
 
 
@@ -30,12 +30,6 @@ class Tag(models.Model):
         verbose_name='Слаг тэга',
         max_length=MAX_LENGTH_OF_TAG_SLUG,
         unique=True,
-        validators=[
-            RegexValidator(
-                regex=REGEX_OF_SLUG,
-                message=MESSAGE_FOR_TAG_SLUG_VALIDATOR,
-            )
-        ]
     )
 
     class Meta:
@@ -63,6 +57,12 @@ class Ingredient(models.Model):
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
         ordering = ('name',)
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'measurement_unit'],
+                name='unique_name_measurement_unit',
+            )
+        ]
 
     def __str__(self):
         return self.name
@@ -100,10 +100,17 @@ class Recipe(models.Model):
             MinValueValidator(
                 MIN_TIME_OF_COOKING,
                 message=(
-                    f'Минимальное время приготовления в минутах '
+                    'Минимальное время приготовления в минутах '
                     f'- {MIN_TIME_OF_COOKING}'
                 )
-            )
+            ),
+            MaxValueValidator(
+                MAX_TIME_OF_COOKING,
+                 message=(
+                    'Максимальное время приготовления в минутах '
+                    f'- {MAX_TIME_OF_COOKING}'
+                )
+            ),
         ],
     )
     author = models.ForeignKey(
@@ -147,10 +154,17 @@ class IngredientInRecipe(models.Model):
             MinValueValidator(
                 MIN_VALUE_OF_INGREDIENTS,
                 message=(
-                    f'Минимальное количество ингредиентов '
+                    'Минимальное количество ингредиентов '
                     f'в рецепте - {MIN_VALUE_OF_INGREDIENTS}'
                 )
-            )
+            ),
+            MaxValueValidator(
+                MAX_VALUE_OF_INGREDIENTS,
+                message=(
+                    'Максимальное количество ингредиентов '
+                    f'в рецепте - {MIN_VALUE_OF_INGREDIENTS}'
+                )
+            ),
         ],
     )
 
@@ -162,49 +176,55 @@ class IngredientInRecipe(models.Model):
         return f'Рецепт: {self.recipe} Ингредиент: {self.ingredient}'
 
 
-class Favorite(models.Model):
-    """Модель для избранных рецептов."""
+class FavoriteShoppingMixin(models.Model):
+    """Миксин для моделей избранного и списка покупок."""
 
     user = models.ForeignKey(
         User,
         verbose_name='Пользователь',
-        related_name='favorites',
         on_delete=models.CASCADE,
     )
     recipe = models.ForeignKey(
         Recipe,
         verbose_name='Рецепт',
-        related_name='favorites',
         on_delete=models.CASCADE,
     )
 
     class Meta:
+        abstract = True
+
+
+class Favorite(FavoriteShoppingMixin):
+    """Модель для избранных рецептов."""
+
+    class Meta:
+        default_related_name = 'favorites'
         verbose_name = 'Рецепт в избранном'
         verbose_name_plural = 'Рецепты в избранном'
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'recipe'),
+                name='unique_recipe_favorite',
+            )
+        ]
 
     def __str__(self):
         return f'Пользователь: {self.user.username} Рецепт: {self.recipe.name}'
 
 
-class ShoppingList(models.Model):
+class ShoppingList(FavoriteShoppingMixin):
     """Модель для списка покупок."""
 
-    user = models.ForeignKey(
-        User,
-        verbose_name='Пользователь',
-        related_name='shopping_list',
-        on_delete=models.CASCADE,
-    )
-    recipe = models.ForeignKey(
-        Recipe,
-        verbose_name='Рецепт',
-        related_name='shopping_list',
-        on_delete=models.CASCADE,
-    )
-
     class Meta:
+        default_related_name = 'shopping_list'
         verbose_name = 'Рецепт в списке покупок'
         verbose_name_plural = 'Рецепты в списке покупок'
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'recipe'),
+                name='unique_recipe_shopping_list',
+            )
+        ]
 
     def __str__(self):
         return f'Пользователь: {self.user.username} Рецепт: {self.recipe.name}'
