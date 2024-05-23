@@ -3,8 +3,11 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from foodgram.constants import (MAX_LENGTH_OF_EMAIL, MAX_LENGTH_OF_FIRST_NAME,
-                               MAX_LENGTH_OF_LAST_NAME)
+from foodgram.constants import (
+    MAX_LENGTH_OF_EMAIL,
+    MAX_LENGTH_OF_FIRST_NAME,
+    MAX_LENGTH_OF_LAST_NAME,
+)
 
 
 class User(AbstractUser):
@@ -30,7 +33,7 @@ class User(AbstractUser):
         blank=True,
         null=True,
     )
-    
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'username']
 

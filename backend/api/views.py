@@ -170,7 +170,6 @@ class RecipeViewSet(ModelViewSet):
             return ShoppingSerializer
         return RecipeCUDSerializer
 
-
     def post_to_list(self, request, pk):
         serializer = self.get_serializer(data=dict(recipe=pk))
         serializer.is_valid(raise_exception=True)
@@ -242,8 +241,8 @@ class RecipeViewSet(ModelViewSet):
         pdf_file = canvas.Canvas(buffer)
         pdfmetrics.registerFont(
             TTFont(
-            'FreeSans',
-            path_to_fonts,
+                'FreeSans',
+                path_to_fonts,
             )
         )
         pdf_file.setFont('FreeSans', 15)

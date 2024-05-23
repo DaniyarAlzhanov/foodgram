@@ -68,7 +68,7 @@ class FavoriteAndShoppingDataSerializer(serializers.ModelSerializer):
     """
 
     image = Base64ImageField()
-    
+
     class Meta:
         model = Recipe
         fields = (
@@ -93,7 +93,7 @@ class BaseFavoriteAndShoppingSerializer(serializers.ModelSerializer):
     class Meta:
         model = None
         fields = (
-            'user', 
+            'user',
             'recipe',
         )
         read_only_fields = ('user',)
@@ -109,7 +109,7 @@ class BaseFavoriteAndShoppingSerializer(serializers.ModelSerializer):
                 f'Рецепт уже добавлен в {self.name_of_model}'
             )
         return data
-    
+
     def to_representation(self, instance):
         return FavoriteAndShoppingDataSerializer(
             instance.recipe,
@@ -128,7 +128,7 @@ class FavoriteSerializer(BaseFavoriteAndShoppingSerializer):
 
 class ShoppingSerializer(BaseFavoriteAndShoppingSerializer):
     """Сериалайзер для модели списка покупок."""
-    
+
     name_of_model = 'список покупок'
 
     class Meta(BaseFavoriteAndShoppingSerializer.Meta):
@@ -182,14 +182,14 @@ class FollowSerializer(serializers.ModelSerializer):
                 message='Вы уже подписаны на данного автора.',
             )
         ]
-    
+
     def validate_author(self, data):
         if self.context.get('request').user == data:
             raise ValidationError(
                 'Подписаться на себя нельзя.'
             )
         return data
-    
+
     def to_representation(self, instance):
         return FollowRepresentationSerializer(
             instance.author,
@@ -313,7 +313,7 @@ class RecipeCUDSerializer(serializers.ModelSerializer):
     )
     image = Base64ImageField()
     tags = serializers.PrimaryKeyRelatedField(
-        queryset=Tag.objects.all(), 
+        queryset=Tag.objects.all(),
         many=True,
     )
 
@@ -337,16 +337,16 @@ class RecipeCUDSerializer(serializers.ModelSerializer):
             raise ValidationError(
                 'Добавьте тэг к рецепту.'
             )
-        
+
         if len(tags) != len(set(tags)):
             raise ValidationError(
                 'Нельзя добавлять одинаковые тэги.'
             )
-        
+
         ingredients = data.get('ingredients_in_recipe', [])
         if not ingredients:
             raise ValidationError('Не добавлен ингредиент(ы).')
-        
+
         unique_ingredients = set()
         for ingredient in ingredients:
             unique_ingredient = ingredient.get('ingredient')
@@ -365,7 +365,7 @@ class RecipeCUDSerializer(serializers.ModelSerializer):
                 'Изображение - обязательное поле.'
             )
         return data
-    
+
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredients_in_recipe', [])
         tags = validated_data.pop('tags', [])

@@ -67,11 +67,11 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 if os.environ.get('ENV') == 'LOCAL':
     DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
 
 else:
     DATABASES = {
