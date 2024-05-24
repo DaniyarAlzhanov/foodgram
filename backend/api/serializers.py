@@ -158,7 +158,7 @@ class FollowRepresentationSerializer(BaseUserSerializer):
         if limit:
             try:
                 queryset = queryset[:int(limit)]
-            except TypeError:
+            except (TypeError, ValueError):
                 pass
         return FavoriteAndShoppingDataSerializer(
             queryset,
